@@ -3,7 +3,8 @@ import { createConnection } from 'mysql2/promise';
 export const connection = createConnection({
   host: 'mysql.infocimol.com.br',
   user: 'infocimol21',
-  database: 'infocimol21'
+  database: 'infocimol21',
+  password: 'Drive1Route',
 })
 
 
