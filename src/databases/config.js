@@ -4,7 +4,7 @@ export const connection = createConnection({
   host: 'mysql.infocimol.com.br',
   user: 'infocimol21',
   database: 'infocimol21',
-  password: 'Drive1Route',
+  port: '3306',
 })
 
 
