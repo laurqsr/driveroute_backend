@@ -7,5 +7,6 @@ const router = express.Router();
 router.post('/motoristas', MotoristasController.inserir);
 router.put('/motoristas', MotoristasController.atualizar);
 router.post('/passageiros', PassageirosController.inserir);
+router.get('/lista-motoristas', MotoristasController.listar);
 
 export default router;

@@ -34,6 +34,19 @@ class MotoristasController {
       response.status(500).send(error.message);
     }
   };
+
+  async listar(request, response) {
+    try {
+
+      const motoristas = await connection.query(
+        'SELECT * FROM pessoa p WHERE p.perfil = "M"'
+      );
+      response.status(201).send(motoristas);
+    } catch (error) {
+      response.status(500).send(error.message);
+    }
+  };
+
 }
 
 export default new MotoristasController();
