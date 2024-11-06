@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import config from '../databases/config.js';
+import { connection } from '../databases/config.js';
 
 export const cadastrarCodigoMotorista = async (request, response) => {
   try {
