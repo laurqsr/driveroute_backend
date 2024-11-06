@@ -1,11 +1,18 @@
 import { createConnection } from 'mysql2/promise';
 
+// export const connection = createConnection({
+//   host: 'mysql.infocimol.com.br',
+//   user: 'infocimol21',
+//   database: 'infocimol21',
+//   port: '3306',
+// })
+
 export const connection = createConnection({
-  //host: 'mysql.infocimol.com.br',
-  host: '44.227.217.144',
+  host: 'mysql.infocimol.com.br',
   user: 'infocimol21',
+  password: 'Drive1Route',
   database: 'infocimol21',
-  port: '3306',
+  port: '3306'
 })
 
 
