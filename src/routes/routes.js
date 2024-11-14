@@ -19,7 +19,7 @@ router.get('/ping', MotoristasController.ping);//funciona
 //ROTAS MOTORISTAS
 router.post('/motoristas/new', MotoristasController.inserir);//funciona
 router.post('/motoristas/login', MotoristasController.login);//funciona
-router.put('/motoristas/update', MotoristasController.atualizar);//naoo funciona e nao precisa agora
+router.put('/motoristas/update', MotoristasController.atualizar);
 router.get('/motoristas/listar', MotoristasController.listar);//funciona
 
 //ROTAS PASSAGEIROS
