@@ -1,33 +1,62 @@
-// import { connection } from '../databases/config.js';
-// import bcrypt from 'bcrypt';
+import { connection } from '../databases/config.js';
+import bcrypt from 'bcrypt';
 
-// class EnderecosController {
+class EnderecosController {
 
-//   // Método para cadastrar endereço
-//   async inserir(request, response) {
-//     const { cidade, bairro, rua, numero, complemento, descricao, escola, Pessoa_id_pessoa } = req.body;
+  async inserir(request, response) {
+    try {
+      console.log('O que foi recebido: ' + request.body);
+      const { nome, email, cidade, bairro, rua, numero } = request.body;
+      
+      // Inserção do endereço na tabela
+      await connection.query(
+        'INSERT INTO enderecos (nome, email, cidade, bairro, rua, numero) VALUES (?, ?, ?, ?, ?, ?)',
+        [nome, email, cidade, bairro, rua, numero]
+      );
+  
+      // Resposta de sucesso
+      response.status(201).send('Endereço cadastrado com sucesso!');
+    } catch (error) {
+      // Tratamento de erro
+      response.status(500).send(error.message);
+    }
+  };
 
-//     try {
-//         // Verificar se o id_pessoa existe na tabela pessoa
-//         const [rows] = await db.execute('SELECT id_pessoa FROM pessoa WHERE id_pessoa = ?', [Pessoa_id_pessoa]);
+  async listar(request, response) {
+    try {
+      const [result] = await connection.query(
+        'SELECT * FROM enderecos'  // Selecionando todos os registros da tabela 'enderecos'
+      );
+  
+      if (result.length === 0) {
+        return response.status(404).send('Nenhum endereço encontrado!');
+      }
+  
+      response.status(200).json(result);  // Retorna os endereços em formato JSON
+    } catch (error) {
+      response.status(500).send(error.message);  // Retorna o erro caso haja algum problema
+    }
+  };
 
-//         if (rows.length === 0) {
-//             return res.status(400).json({ error: 'Pessoa não encontrada' });
-//         }
+  async listarEscolas(request, response) {
+    try {
+      const [result] = await connection.query(
+        'SELECT * FROM enderecos WHERE escola = "S"'  // Filtrando os registros onde 'escola' é igual a 'S'
+      );
+  
+      if (result.length === 0) {
+        return response.status(404).send('Nenhuma escola encontrada!');
+      }
+  
+      response.status(200).json(result);  // Retorna os endereços das escolas em formato JSON
+    } catch (error) {
+      response.status(500).send(error.message);  // Retorna o erro caso haja algum problema
+    }
+  }
+  
+  
+  
 
-//         // Inserir o novo endereço
-//         await db.execute(
-//             'INSERT INTO endereco (cidade, bairro, rua, numero, complemento, descricao, escola, Pessoa_id_pessoa) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-//             [cidade, bairro, rua, numero, complemento, descricao, escola, Pessoa_id_pessoa]
-//         );
+}
 
-//         return res.status(201).json({ message: 'Endereço cadastrado com sucesso' });
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ error: 'Erro ao cadastrar endereço' });
-//     }
-// };
-
-// }
-
-// export default new EnderecosController();
+export default new EnderecosController();
