@@ -3,41 +3,60 @@ import bcrypt from 'bcrypt';
 
 class MotoristasController {
 
-  async inserir(request, response) {
-    try {
-      console.log('O que foi recebido: '+request.body);
-      const { nome, sobrenome, senha, email } = request.body;
-      const senhaMotorista = bcrypt.hashSync(senha, 10);
-      await connection.query(
-        'INSERT INTO pessoa (nome, sobrenome, email, senha, perfil) VALUES (?, ?, ?, ?, ?)',
-        [nome, sobrenome, email, senhaMotorista, "M"]
-      );
-      response.status(201).send('Cadastro de motorista realizado com sucesso!');
-    } catch (error) {
-      response.status(500).send(error.message);
-    }
-  };
+ async inserir(request, response) {
+  try {
+    console.log('O que foi recebido: ', request.body);
+    const { nome, sobrenome, senha, email } = request.body;
+    const senhaMotorista = bcrypt.hashSync(senha, 10);
 
-  async login(request, response) {
-    try {
-      const { email, senha } = request.body;
-      const [result] = await connection.query(
-        'SELECT * FROM pessoa WHERE email = ? AND perfil = "M"',
-        [email]
-      );
-      if (result.length === 0) {
-        return response.status(404).send('Motorista não encontrado!');
-      }
-      const motorista = result[0];
-      const senhaValida = bcrypt.compareSync(senha, motorista.senha);
-      if (!senhaValida) {
-        return response.status(401).send('Senha incorreta!');
-      }
-      response.status(200).send('Login realizado com sucesso!');
-    } catch (error) {
-      response.status(500).send(error.message);
-    }
+    const [result] = await connection.query(
+      'INSERT INTO pessoa (nome, sobrenome, email, senha, perfil) VALUES (?, ?, ?, ?, ?)',
+      [nome, sobrenome, email, senhaMotorista, "M"]
+    );
+
+    const motoristaId = result.insertId; 
+    response.status(201).json({ message: 'Cadastro realizado com sucesso!', id: motoristaId });
+  } catch (error) {
+    response.status(500).send(error.message);
   }
+}
+
+async login(request, response) {
+  try {
+    const { email, senha } = request.body;
+
+    if (!email || !senha) {
+      return response.status(400).json({ message: 'Email e senha são obrigatórios!' });
+    }
+
+    const [result] = await connection.query(
+      'SELECT * FROM pessoa WHERE email = ? AND perfil = "M"',
+      [email]
+    );
+
+    if (result.length === 0) {
+      return response.status(404).json({ message: 'Os campos não coincidem. Tente mudar o e-mail ou a senha!' });
+    }
+
+    const motorista = result[0];
+    const senhaValida = bcrypt.compareSync(senha, motorista.senha);
+
+    if (!senhaValida) {
+      return response.status(401).json({ message: 'Senha incorreta!' });
+    }
+
+    response.status(200).json({
+      id: motorista.id_pessoa,
+      nome: motorista.nome,
+      email: motorista.email,
+    });
+  } catch (error) {
+    console.error('Erro no login:', error.message);
+    response.status(500).json({ message: 'Erro no servidor. Tente novamente mais tarde.' });
+  }
+}
+
+  
 
   async atualizar(request, response) {
     try {       

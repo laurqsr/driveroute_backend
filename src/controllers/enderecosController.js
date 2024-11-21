@@ -5,52 +5,64 @@ class EnderecosController {
 
   async inserir(request, response) {
     try {
-      console.log('O que foi recebido: ' + request.body);
-      const { nome, email, cidade, bairro, rua, numero } = request.body;
-      
-      // Inserção do endereço na tabela
-      await connection.query(
-        'INSERT INTO enderecos (nome, email, cidade, bairro, rua, numero) VALUES (?, ?, ?, ?, ?, ?)',
-        [nome, email, cidade, bairro, rua, numero]
-      );
+      console.log('O que foi recebido: ', request.body);
+      const { nome, email, cidade, bairro, rua, numero, motorista } = request.body;
   
-      // Resposta de sucesso
-      response.status(201).send('Endereço cadastrado com sucesso!');
-    } catch (error) {
-      // Tratamento de erro
-      response.status(500).send(error.message);
-    }
-  };
-
-  async listar(request, response) {
-    try {
-      const [result] = await connection.query(
-        'SELECT * FROM enderecos'  // Selecionando todos os registros da tabela 'enderecos'
-      );
-  
-      if (result.length === 0) {
-        return response.status(404).send('Nenhum endereço encontrado!');
+      if (!nome || !email || !cidade || !bairro || !rua || !numero || !motorista) {
+        return response.status(400).send('Todos os campos são obrigatórios.');
       }
   
-      response.status(200).json(result);  // Retorna os endereços em formato JSON
+      console.log('Dados para inserção:', nome, email, cidade, bairro, rua, numero, motorista);
+  
+      // Comando SQL para inserção
+      await connection.query(
+        'INSERT INTO enderecos (nome, email, cidade, bairro, rua, numero, motorista) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [nome, email, cidade, bairro, rua, numero, motorista]
+      );
+  
+      response.status(201).send('Endereço cadastrado com sucesso!');
     } catch (error) {
-      response.status(500).send(error.message);  // Retorna o erro caso haja algum problema
+      console.error('Erro ao inserir endereço:', error.message);
+      response.status(500).send('Erro no servidor: ' + error.message);
     }
-  };
+  }
+  
+  
+  async listar(request, response) {
+    try {
+      const { motoristaId } = request.query; 
+  
+      let query = 'SELECT * FROM enderecos';
+      let params = [];
+  
+
+      if (motoristaId) {
+        query += ' WHERE motorista = ?';
+        params.push(motoristaId);
+      }
+  
+      const [result] = await connection.query(query, params); 
+  
+      response.status(200).json(result);
+    } catch (error) {
+      response.status(500).send(error.message);
+    }
+  }
+  
 
   async listarEscolas(request, response) {
     try {
       const [result] = await connection.query(
-        'SELECT * FROM enderecos WHERE escola = "S"'  // Filtrando os registros onde 'escola' é igual a 'S'
+        'SELECT * FROM enderecos WHERE escola = "S"' 
       );
   
       if (result.length === 0) {
         return response.status(404).send('Nenhuma escola encontrada!');
       }
   
-      response.status(200).json(result);  // Retorna os endereços das escolas em formato JSON
+      response.status(200).json(result);
     } catch (error) {
-      response.status(500).send(error.message);  // Retorna o erro caso haja algum problema
+      response.status(500).send(error.message); 
     }
   }
   
